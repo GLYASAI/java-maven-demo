@@ -1,0 +1,17 @@
+stages:
+  - name: Build
+    steps:
+      - runScriptConfig:
+          image: maven:3-jdk-7
+          shellScript: |-
+            mvn clean install
+  - name: Publish
+    steps:
+      - publishImageConfig:
+          dockerfilePath: ./Dockerfile
+          buildContext: .
+          tag: java-maven-demo:${CICD_EXECUTION_SEQUENCE}
+  - name: Deploy
+    steps:
+      - applyYamlConfig:
+          path: ./deployment.yaml

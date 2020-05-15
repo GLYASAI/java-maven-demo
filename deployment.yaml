@@ -1,0 +1,36 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: java-maven-demo-service
+spec:
+  selector:
+    app: java-maven-demo
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-maven-demo
+  labels:
+    app: java-maven-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-maven-demo
+  template:
+    metadata:
+      labels:
+        app: java-maven-demo
+    spec:
+      imagePullSecrets:
+        - name: pipeline-docker-registry
+      containers:
+        - name: java-maven-demo
+          image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
+          ports:
+            - containerPort: 5000
